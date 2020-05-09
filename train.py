@@ -1,4 +1,5 @@
 from model import SigNet, ContrastiveLoss
+import os
 from data import get_data_loader
 from PIL import ImageOps
 import torch
@@ -69,6 +70,7 @@ if __name__ == "__main__":
 
     trainloader = get_data_loader(is_train=True, batch_size=24, image_transform=image_transform, dataset='cedar')
     testloader = get_data_loader(is_train=False, batch_size=24, image_transform=image_transform, dataset='cedar')
+    os.makedirs('checkpoints', exist_ok=True)
 
     model.train()
     print(model)
