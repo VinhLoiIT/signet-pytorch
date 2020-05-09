@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo 'Download signatures dataset'
-# wget https://cedar.buffalo.edu/NIJ/data/signatures.rar
+wget https://cedar.buffalo.edu/NIJ/data/signatures.rar
 
 unrar x signatures.rar
 
