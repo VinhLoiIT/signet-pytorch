@@ -133,4 +133,4 @@ dmypy.json
 data/*
 checkpoints/*
 
-!data/cedar.sh
+!data/*.sh
