@@ -1,5 +1,5 @@
 from model import SigNet, ContrastiveLoss
-from data import get_data_loader, Binarize
+from data import get_data_loader
 from PIL import ImageOps
 import torch
 import torch.nn as nn
