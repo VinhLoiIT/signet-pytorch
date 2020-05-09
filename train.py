@@ -81,7 +81,7 @@ if __name__ == "__main__":
         scheduler.step(epoch)
 
         to_save = {
-            'model': model.module.state_dict(),
+            'model': model.state_dict(),
             'scheduler': scheduler.state_dict(),
             'optim': optimizer.state_dict(),
         }
