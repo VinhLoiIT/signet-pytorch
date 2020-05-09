@@ -80,7 +80,7 @@ if __name__ == "__main__":
         train(model, optimizer, criterion, trainloader)
         print('Evaluating', '-'*20)
         loss_pe = eval(model, criterion, testloader)
-        scheduler.step(epoch)
+        scheduler.step()
 
         to_save = {
             'model': model.state_dict(),
