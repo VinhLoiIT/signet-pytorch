@@ -14,16 +14,21 @@ seed = 2020
 np.random.seed(seed)
 
 def get_data_loader(is_train, batch_size, image_transform, dataset='cedar'):
-    if dataset=='cedar':
-        data = CEDAR(is_train, image_transform)
+    if dataset == 'cedar':
+        data_dir = './data/CEDAR'
+    elif dataset == 'bengali':
+        data_dir = './data/BHSig260/Bengali'
+    elif dataset == 'hindi':
+        data_dir ='./data/BHSig260/Hindi'
     else:
         raise ValueError(f'Unknow dataset {dataset}')
+    data = SignDataset(is_train, data_dir, image_transform)
     is_shuffle = is_train
     loader = DataLoader(data, batch_size=batch_size, shuffle=is_shuffle, num_workers=12, pin_memory=True)
     return loader
-    
-class CEDAR(Dataset):
-    def __init__(self, is_train, image_transform=None, data_dir='./data/CEDAR'):
+
+class SignDataset(Dataset):
+    def __init__(self, is_train: bool, data_dir: str, image_transform=None):
         if not os.path.exists(os.path.join(data_dir, 'train.csv')) or not os.path.exists(os.path.join(data_dir, 'test.csv')):
             print('Not found train/test splits, run create_annotation first')
         else:
