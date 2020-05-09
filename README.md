@@ -24,5 +24,19 @@ python3 prepare_data.py
 python3 train.py
 ```
 
+# Result
+
+| Dataset | Accuracy (%) |
+| ------- | ------------ |
+| CEDAR | 100 |
+
+# TODO
+- [ ] Init bias = 0 as paper proposed
+- [ ] Add normalization (e.g. divide by standard deviation)
+- [ ] GPDS 300 dataset
+- [ ] GPDS Synthetic Signature Corpus dataset
+- [ ] Bengali dataset
+- [ ] Hindi dataset
+
 # Reference
 - (Maybe author's code) Keras implementation https://github.com/sounakdey/SigNet
