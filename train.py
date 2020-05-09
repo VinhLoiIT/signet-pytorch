@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import transforms
+from metrics import accuracy
 
 seed = 2020
 torch.manual_seed(seed)
@@ -41,18 +42,26 @@ def eval(model, criterion, dataloader, log_interval=50):
     running_loss = 0
     number_samples = 0
 
+    distances = []
+
     for batch_idx, (x1, x2, y) in enumerate(dataloader):
         x1, x2, y = x1.to(device), x2.to(device), y.to(device)
 
         x1, x2 = model(x1, x2)
         loss = criterion(x1, x2, y)
+        distances.extend(zip(torch.pairwise_distance(x1, x2, 2).cpu().tolist(), y.cpu().tolist()))
 
         number_samples += len(x1)
         running_loss += loss.item() * len(x1)
 
         if (batch_idx + 1) % log_interval == 0 or batch_idx == len(dataloader) - 1:
             print('{}/{}: Loss: {:.4f}'.format(batch_idx+1, len(dataloader), running_loss / number_samples))
-    return running_loss / number_samples
+
+    distances, y = zip(*distances)
+    distances, y = torch.tensor(distances), torch.tensor(y)
+    max_accuracy = accuracy(distances, y)
+    print(f'Max accuracy: {max_accuracy}')
+    return running_loss / number_samples, max_accuracy
 
 if __name__ == "__main__":
     model = SigNet().to(device)
@@ -68,8 +77,8 @@ if __name__ == "__main__":
         # TODO: add normalize
     ])
 
-    trainloader = get_data_loader(is_train=True, batch_size=24, image_transform=image_transform, dataset='cedar')
-    testloader = get_data_loader(is_train=False, batch_size=24, image_transform=image_transform, dataset='cedar')
+    trainloader = get_data_loader(is_train=True, batch_size=32, image_transform=image_transform, dataset='cedar')
+    testloader = get_data_loader(is_train=False, batch_size=32, image_transform=image_transform, dataset='cedar')
     os.makedirs('checkpoints', exist_ok=True)
 
     model.train()
@@ -79,7 +88,7 @@ if __name__ == "__main__":
         print('Training', '-'*20)
         train(model, optimizer, criterion, trainloader)
         print('Evaluating', '-'*20)
-        loss_pe = eval(model, criterion, testloader)
+        loss, acc = eval(model, criterion, testloader)
         scheduler.step()
 
         to_save = {
@@ -89,6 +98,6 @@ if __name__ == "__main__":
         }
 
         print('Saving checkpoint..')
-        torch.save(to_save, 'checkpoints/epoch_{}_loss_{:.3f}.pt'.format(epoch, loss_pe))
+        torch.save(to_save, 'checkpoints/epoch_{}_loss_{:.3f}_acc_{:.3f}.pt'.format(epoch, loss, acc))
 
     print('Done')
