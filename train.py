@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import transforms
 from metrics import accuracy
+from argparse import ArgumentParser
 
 seed = 2020
 torch.manual_seed(seed)
@@ -64,6 +65,13 @@ def eval(model, criterion, dataloader, log_interval=50):
     return running_loss / number_samples, max_accuracy
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--dataset', type=str, choices=['cedar', 'bengali', 'hindi'], default='cedar')
+    args = parser.parse_args()
+    print(args)
+
     model = SigNet().to(device)
     criterion = ContrastiveLoss(alpha=1, beta=1, margin=1).to(device)
     optimizer = optim.RMSprop(model.parameters(), lr=1e-5, eps=1e-8, weight_decay=5e-4, momentum=0.9)
@@ -77,8 +85,8 @@ if __name__ == "__main__":
         # TODO: add normalize
     ])
 
-    trainloader = get_data_loader(is_train=True, batch_size=32, image_transform=image_transform, dataset='cedar')
-    testloader = get_data_loader(is_train=False, batch_size=32, image_transform=image_transform, dataset='cedar')
+    trainloader = get_data_loader(is_train=True, batch_size=args.batch_size, image_transform=image_transform, dataset=args.dataset)
+    testloader = get_data_loader(is_train=False, batch_size=args.batch_size, image_transform=image_transform, dataset=args.dataset)
     os.makedirs('checkpoints', exist_ok=True)
 
     model.train()
