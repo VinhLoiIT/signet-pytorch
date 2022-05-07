@@ -51,7 +51,7 @@ class SigNet(nn.Module):
             nn.Flatten(1, -1), # 18*26*256
             nn.Linear(18*26*256, 1024),
             nn.Dropout2d(p=0.5),
-            nn.Linear(1024, 256),
+            nn.Linear(1024, 128),
         )
 
         # TODO: init bias = 0
